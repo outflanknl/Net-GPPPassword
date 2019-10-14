@@ -30,7 +30,7 @@ namespace Net_GPPPassword
                 domain = Environment.GetEnvironmentVariable("USERDNSDOMAIN");
             }
         
-            if (domain == "")
+            if (String.IsNullOrEmpty(domain))
             {
                 Console.WriteLine("Machine is not part of domain - exit.");
                 return;
