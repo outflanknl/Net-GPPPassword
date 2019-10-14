@@ -1,6 +1,8 @@
 # Net-GPPPassword
 .NET implementation of Get-GPPPassword. Retrieves the plaintext password and other information for accounts pushed through Group Policy Preferences.
 
+If you have no idea what this is about, then please read: https://adsecurity.org/?p=2288. The technique is old, but still valuable in environments where a domain was created long ago.
+
 # Usage
 Net-GPPPassword.exe [ADdomain (optional)]
 
